@@ -141,8 +141,24 @@ Six builds (`private/build-1..6.log`), each a few minutes (codegen ~15 s, 145 ob
 6. those two dropped (eight other candidates also sit inside `.pdata` functions but warn
    nothing, kept as Quake 4 kept its landing pads): clean.
 Checks after the final codegen: 282 switches, 0 wrong; no vpkd3d128 hazards in 73,671 vector
-instructions; `find_vcall_thunks.py` 0 forwarders; the finder's remaining candidates are the
-two dropped ones.
+instructions; the finder's remaining candidates are the two dropped ones. Virtual-call
+forwarders: **0 reachable unregistered ones** (corrected 2026-10-29, see below).
+
+**Virtual-call forwarders, corrected (2026-10-29).** The earlier "0 forwarders" came from a
+`find_vcall_thunks.py` that still scanned Quake 4's `.text` (`0x82150000` + `0x813604`): it
+skipped LOTR's first 640 KB of code and read past its end, and it only matched Quake 4's
+r11/r10 register pair. The finder now takes the code sections from
+`private/xex/default.sections.txt` (`.text` `0x820B0000` + `0x75A020`, `BINK`), matches any
+register pair, walks back over `this`-adjusting prefixes to the entry, and drops entries that
+are labels in the generated code. Of 306 matches outside the function table and `.pdata`, 247
+sit inside registered straight-line code and 51 more are branch targets in a registered
+function (null-check halves after a `blr`, loop heads after a `b`: doa4-360-recomp's false
+positive shape). 8 entries are left: `0x822C5B48`, `0x824FDFB8`, `0x825580E8`, `0x8259E630`,
+`0x8259E648`, `0x8261C340`, `0x8261C350`, `0x8261C500`. Each starts after a `bctr`/`b`, but
+none has a pointer anywhere in the image, a branch to it or a `lis`/`addi` pair that builds it
+(registered forwarders like `0x8219CE78` do have vtable pointers in `.rdata`): duplicate copies
+the linker kept, unreachable. Not added to the manifest (no codegen needed); if a "Call to
+invalid or unregistered function" ever names one, the finder prints its manifest line.
 
 The SDK DLLs beside the program are the Vulkan-only install's (hashes checked).
 
@@ -190,7 +206,7 @@ pwsh -NoProfile -File tools/launch.ps1 -Windowed          # a window on the user
 | `tools/check_switch_tables.py <image.bin> port/generated/default [--toml out.toml]` | replays every generated `switch` against the image; rerun after every codegen |
 | `tools/find_missed_functions.py <image.bin> port/generated/default` | function entries the analyser missed, as manifest lines |
 | `tools/check_vector_aliasing.py port/generated/default` | the vpkd3d128 hazard; `build.ps1` runs it |
-| `tools/find_vcall_thunks.py <image.bin> port/generated/default <pdata_funcs.txt>` | virtual-call forwarders with no function-table entry or static reference |
+| `tools/find_vcall_thunks.py <image.bin> port/generated/default private/xex/pdata_funcs.txt` | virtual-call forwarders with no function-table entry, with their static references; code ranges from `default.sections.txt` |
 | `tools/scan_d3d.py port/generated/default` | functions that build PM4 packets (only if a native renderer is attempted) |
 | `tools/rdoc_capture.ps1 -Times 212,215` | a scripted run under RenderDoc: a capture of two game frames at each time (`LotrcFrameMark` hook); the times go through `REX_LOTRC_RDOC_CAPTURE_AT` |
 | `tools/rdoc_*.py` | run with `qrenderdoc --python` (RenderDoc 1.46 in `../graw360-recomp/private/tools/renderdoc/`), settings in `RDOC_*` variables (each file's header); `rdoc_tex_stats.py` for HDR targets (min/max/percentiles, auto white point; the PNGs carry alpha 0, flatten them before viewing) |
