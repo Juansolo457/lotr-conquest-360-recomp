@@ -2,8 +2,9 @@
 stereo at 48 kHz, plus <file>.txt with "frame_index host_ms" every 64 frames.
   python tools/audio_report.py private/audio.f32 [--wav out.wav] [--from S] [--to S]
 Per second: RMS of each channel (dBFS), peak, clipped samples, DC offset, the left/right
-correlation and the share of near-silent 256-sample frames, so a 'broken' stretch shows as
-clipping, silence, a one-sided mix or a DC offset. From the .txt: the submit rate per 64 frames
+correlation, the share of near-silent 256-sample frames and the count of NaN/inf samples (they
+count as 0 in the metrics and in the WAV), so a 'broken' stretch shows as clipping, silence, a
+one-sided mix, a DC offset or non-finite samples. From the .txt: the submit rate per 64 frames
 (187.5 frames/s when the game keeps up; lower means it starved the output). --wav writes a
 16-bit WAV of the range for listening. The dump is read one second at a time, so a long capture
 costs no more memory than a short one.
@@ -27,7 +28,16 @@ def read_second(f, sec):
     return struct.unpack("<%df" % count, data[: count * 4])
 
 
+def finite(chunk):
+    """The samples with NaN and inf replaced by 0, and how many there were."""
+    bad = sum(1 for v in chunk if not math.isfinite(v))
+    if bad:
+        chunk = tuple(v if math.isfinite(v) else 0.0 for v in chunk)
+    return chunk, bad
+
+
 def report_second(sec, chunk):
+    chunk, bad = finite(chunk)
     left = chunk[0::2]
     right = chunk[1::2]
     if not left or not right:
@@ -51,7 +61,7 @@ def report_second(sec, chunk):
         if max(abs(v) for v in fr) < 1e-4:
             silent += 1
     print(f"{sec:4d} {rms(left):8.1f} {rms(right):8.1f} {peak:5.2f} {clip:5d} {dcl:+.4f} {dcr:+.4f} "
-          f"{corr:+.2f} {100 * silent / frames:5.1f}")
+          f"{corr:+.2f} {100 * silent / frames:5.1f} {bad:7d}")
 
 
 def report_submit_rate(times):
@@ -79,7 +89,7 @@ def write_wav(f, out_wav, sec_from, sec_to):
         w.setsampwidth(2)
         w.setframerate(RATE)
         for sec in range(sec_from, sec_to):
-            chunk = read_second(f, sec)
+            chunk, _ = finite(read_second(f, sec))  # NaN/inf become silence, not full scale
             if not chunk:
                 break
             w.writeframes(struct.pack(
@@ -105,19 +115,21 @@ def main():
             i += 2
         else:
             i += 1
+    times = path + ".txt"
+    if out_wav and os.path.abspath(out_wav) in (os.path.abspath(path), os.path.abspath(times)):
+        raise SystemExit("--wav must not name the dump or its .txt (it would be truncated)")
     n = os.path.getsize(path) // 8  # stereo samples
     total_seconds = int(math.ceil(n / RATE))
     print(f"{path}: {n} stereo samples = {n / RATE:.1f} s")
     # The range, clamped to the dump and ordered.
     sec_from = max(0, min(int(t_from), total_seconds))
     sec_to = total_seconds if t_to is None else max(sec_from, min(int(math.ceil(t_to)), total_seconds))
-    print("sec  rmsL(dB) rmsR(dB)  peak  clip  dcL     dcR     corr  silent%")
+    print("sec  rmsL(dB) rmsR(dB)  peak  clip  dcL     dcR     corr  silent% nan/inf")
     with open(path, "rb") as f:
         for sec in range(sec_from, sec_to):
             report_second(sec, read_second(f, sec))
         if out_wav:
             write_wav(f, out_wav, sec_from, sec_to)
-    times = path + ".txt"
     if os.path.exists(times):
         report_submit_rate(times)
 

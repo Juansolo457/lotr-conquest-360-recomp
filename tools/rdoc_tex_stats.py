@@ -52,7 +52,9 @@ try:
         elif tex.format.compByteWidth == 1:
             vals = [v / 255.0 for v in data]
         else:
-            p("   unsupported format"); continue
+            p("   unsupported format", tex.format.Name())
+            failed = True
+            continue
         white = 1.0
         for c in range(n):
             ch = sorted(vals[c::n])
@@ -69,8 +71,12 @@ try:
         s.comp.blackPoint = 0.0
         s.comp.whitePoint = float(white)
         path = os.path.join(out_dir, "texstats_%d_ev%d.png" % (res, event))
-        p("   saved", path, "white %.4f" % white)
-        ctl.SaveTexture(s, path)
+        status = ctl.SaveTexture(s, path)
+        if status != rd.ResultCode.Succeeded:
+            p("   save failed:", status, path)
+            failed = True
+        else:
+            p("   saved", path, "white %.4f" % white)
     ctl.Shutdown()
     cap.Shutdown()
 except Exception:  # noqa: BLE001

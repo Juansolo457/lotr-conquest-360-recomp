@@ -49,7 +49,11 @@ try:
         s.alpha = rd.AlphaMapping.Discard
         s.comp.blackPoint = 0.0
         s.comp.whitePoint = float(os.environ.get("RDOC_WHITE", "1.0"))
-        ctl.SaveTexture(s, os.path.join(out_dir, "texhdr_%d_ev%d.png" % (res, event)))
+        path = os.path.join(out_dir, "texhdr_%d_ev%d.png" % (res, event))
+        status = ctl.SaveTexture(s, path)
+        if status != rd.ResultCode.Succeeded:
+            p("   save failed:", status, path)
+            failed = True
         data = ctl.GetTextureData(tex.resourceId, rd.Subresource(0, 0, 0))
         if tex.format.compByteWidth == 1:
             n = tex.format.compCount
