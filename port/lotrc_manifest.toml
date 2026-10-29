@@ -17,4 +17,43 @@ out_directory_path = "generated/default"
 includes = []
 
 [entrypoint.functions]
-# Round 1: none yet (the first codegen run fills this).
+# Round 1 (2026-10-29): the first codegen run reported these as `b` targets "not in any
+# function". Each is a leaf with no .pdata entry, right after the function before it; checked by
+# disassembly (private/xex/default.bin).
+0x82479930 = {}   # this-adjusting thunk (addi r3,r3,4; b 0x82473118), tail-called from 0x82479D0C
+0x823A3E88 = {}   # 4-instruction copy of two words from r4 into r3+0x28, blr; tail-called from 0x823992B4
+0x824779B8 = {}   # a single `b 0x82477640` (a thunk in a thunk table), tail-called from 0x824789FC
+
+# Round 2 (2026-10-29, second codegen): two shapes the analyser gets wrong.
+# - 0x824BA800 is a leaf (no .pdata entry) whose first `blr` is at +0x2C and whose code goes on
+#   to +0x50 (two `beq` back to the `li r3,0; blr` at +0x28): cut at the blr, the tail was
+#   orphaned ("Unresolved conditional branch to 0x824BA828"). The size covers it.
+0x824BA800 = { size = 0x54 }
+
+# - Two byte-indexed jump tables (lbzx from a byte table, target = base + 4*byte) whose length
+#   the analyser guessed as 512 and 147 entries; the image's tables have 11 and 47 bytes before
+#   the next table starts. The extra "cases" pointed into the following functions, so
+#   sub_82569C50 swallowed blocks of 0x82569FA8 and 0x8256A060 (four "undeclared label"
+#   compile errors). tools/check_switch_tables.py found both; the bounds are read from the
+#   tables themselves (private/xex/default.bin at 0x8203BB70 and 0x8203B808).
+[[entrypoint.switch_tables]]   # in sub_82569C50, byte table 0x8203BB70, base 0x82569D68
+address = 0x82569D64
+register = 29
+labels = [
+  0x82569D68, 0x82569D90, 0x82569E0C, 0x82569DB8, 0x82569E84, 0x82569EA4,
+  0x82569EC4, 0x82569EF0, 0x82569F1C, 0x82569F3C, 0x82569F88,
+]
+
+[[entrypoint.switch_tables]]   # in sub_8254EED8, byte table 0x8203B808, base 0x8254EF00
+address = 0x8254EEFC
+register = 3
+labels = [
+  0x8254EF00, 0x8254EF08, 0x8254EF10, 0x8254EF18, 0x8254EF20, 0x8254EF28,
+  0x8254EF30, 0x8254EF38, 0x8254EF40, 0x8254EF48, 0x8254EF50, 0x8254EF58,
+  0x8254EF60, 0x8254EF68, 0x8254EF70, 0x8254EF78, 0x8254EF80, 0x8254EF88,
+  0x8254EF90, 0x8254EF98, 0x8254EFA0, 0x8254EFA8, 0x8254EFB0, 0x8254EFB8,
+  0x8254EFC0, 0x8254EFC8, 0x8254EFD0, 0x8254EFD8, 0x8254EFE0, 0x8254EFE8,
+  0x8254EFF0, 0x8254EFF8, 0x8254F000, 0x8254F008, 0x8254F010, 0x8254F018,
+  0x8254F020, 0x8254F028, 0x8254F030, 0x8254F038, 0x8254F040, 0x8254F048,
+  0x8254F050, 0x8254F058, 0x8254F060, 0x8254F068, 0x8254F070,
+]
