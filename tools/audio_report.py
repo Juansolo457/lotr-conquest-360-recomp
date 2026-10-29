@@ -83,6 +83,15 @@ def report_submit_rate(times):
         print("  all intervals within 160-215 frames/s")
 
 
+def same_file(a, b):
+    """True when the two paths name one file, through symbolic or hard links too; for a
+    destination that doesn't exist yet, the resolved paths are compared."""
+    try:
+        return os.path.samefile(a, b)
+    except OSError:
+        return os.path.realpath(a) == os.path.realpath(b)
+
+
 def write_wav(f, out_wav, sec_from, sec_to):
     with wave.open(out_wav, "wb") as w:
         w.setnchannels(2)
@@ -116,7 +125,7 @@ def main():
         else:
             i += 1
     times = path + ".txt"
-    if out_wav and os.path.abspath(out_wav) in (os.path.abspath(path), os.path.abspath(times)):
+    if out_wav and any(same_file(out_wav, p) for p in (path, times)):
         raise SystemExit("--wav must not name the dump or its .txt (it would be truncated)")
     n = os.path.getsize(path) // 8  # stereo samples
     total_seconds = int(math.ceil(n / RATE))
