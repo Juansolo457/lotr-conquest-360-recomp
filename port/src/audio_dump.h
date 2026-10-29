@@ -7,7 +7,8 @@
 // float PCM, 2 channels, 48 kHz (no header: the process is usually killed by the smoke script). <file>.txt gets one line per 64 frames with
 // the frame index and the host time in ms, so starvation gaps (frames the game didn't submit)
 // show as a frame rate below 187.5/s. <file>.6ch is every frame as submitted (6 x 256
-// big-endian floats, channel-sequential: FL FR FC LFE BL BR), for per-channel analysis.
+// big-endian floats, channel-sequential: FL FR FC LFE BL BR), for per-channel analysis. The
+// game registers one audio client; a further client (or a state restore) gets <file>.<n>.
 //   python tools/audio_report.py private/audio.f32 [private/audio.f32.txt]
 #pragma once
 

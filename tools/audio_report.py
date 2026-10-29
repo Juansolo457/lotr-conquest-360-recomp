@@ -54,14 +54,15 @@ def report_second(sec, chunk):
     vl = math.sqrt(sum((l - dcl) ** 2 for l in left)) or 1e-9
     vr = math.sqrt(sum((r - dcr) ** 2 for r in right)) or 1e-9
     corr = cov / (vl * vr)
-    frames = max(1, len(chunk) // (FRAME * 2))
+    frames = len(chunk) // (FRAME * 2)  # complete 256-sample frames only
     silent = 0
     for k in range(frames):
         fr = chunk[k * FRAME * 2 : (k + 1) * FRAME * 2]
         if max(abs(v) for v in fr) < 1e-4:
             silent += 1
+    silent_pct = 100 * silent / frames if frames else 0.0
     print(f"{sec:4d} {rms(left):8.1f} {rms(right):8.1f} {peak:5.2f} {clip:5d} {dcl:+.4f} {dcr:+.4f} "
-          f"{corr:+.2f} {100 * silent / frames:5.1f} {bad:7d}")
+          f"{corr:+.2f} {silent_pct:5.1f} {bad:7d}")
 
 
 def report_submit_rate(times):

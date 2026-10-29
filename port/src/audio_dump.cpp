@@ -81,8 +81,13 @@ class TeeAudioSystem : public rex::audio::sdl::SDLAudioSystem {
     rex::audio::AudioDriver* inner = nullptr;
     const rex::X_STATUS status = SDLAudioSystem::CreateDriver(index, semaphore, &inner);
     if (status != X_STATUS_SUCCESS) return status;
-    *out_driver = new TeeDriver(memory_, inner, path_);
-    REXLOG_INFO("LOTRC: audio dump to {}", path_);
+    // One file set per client: a second client (another RegisterClient, or a Restore) would
+    // otherwise truncate the first one's capture. Client 0 keeps the plain path; client n
+    // writes <path>.n (and .n.txt, .n.6ch).
+    std::string path = path_;
+    if (index) path += "." + std::to_string(index);
+    *out_driver = new TeeDriver(memory_, inner, path);
+    REXLOG_INFO("LOTRC: audio dump (client {}) to {}", index, path);
     return status;
   }
 
