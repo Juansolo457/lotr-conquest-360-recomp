@@ -14,6 +14,17 @@ estimate wrapped below 2^-127: `tools/patches/rexglue-bd833a2-vexptefp-underflow
 Open: the screen-space distortion effects draw as streaked rectangles. M1 (boot, logos,
 title, main menu) was done earlier the same day.
 
+### Steam Deck via Proton (2026-10-29; package in `private/steamdeck/LOTRConquest-SteamDeck`)
+At the user's request, before the native Linux build (M4): the Windows build on the Deck under
+Proton, at `/home/deck/recomps/LOTRConquest-SteamDeck/` (SSH `deck@steamdeck`, passwordless).
+DOAX2's layout: `lotrc.exe` (Release) and `lotrc-relwithdebinfo.exe` with the matching SDK
+DLLs and PDBs, the VC runtime DLLs (Proton lacks `msvcp140_atomic_wait`), `lotrc.toml` beside
+the exe (fullscreen, 720p, 16x AF, `readback_resolve = "fast"`, log flush every second,
+`lotrc_frame_log = "logs/frames.csv"`), `game/` (the disc), `user/` (empty), `logs/`, the setup
+in `README-SteamDeck.txt` (non-Steam game, Proton Experimental, START IN = the folder, the
+`WINEDLLOVERRIDES` launch option). The program finds `game/` and `user/` in its start-in folder
+(`OnConfigurePaths`). Logs and `frames.csv` are pulled over SSH. Not run on the Deck yet.
+
 ### Runs 7-11 (2026-10-29): Training plays; the blown-out audio and its fix
 `tools/autopilot/training.txt` (run, look, attack, block, jump in a loop from +140 s) plays the
 whole Training level for 7 minutes without a crash: combat, fire attacks, the pause tutorials,
