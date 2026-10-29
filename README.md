@@ -20,7 +20,8 @@ resolution. Windows first, then native Linux and the Steam Deck, both on Vulkan.
 
 ## Status
 
-Just started: the toolchain and the first translation.
+Boots to the main menu (2026-10-29): the Bink logos, the title screen and the Scaleform menus
+draw correctly on the SDK's Vulkan backend. Next: the first level.
 
 - [docs/PLAN.md](docs/PLAN.md): goals, decisions, milestones
 - [docs/HANDOFF.md](docs/HANDOFF.md): current state, how things work, where things live

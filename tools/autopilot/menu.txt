@@ -14,7 +14,9 @@
 70.0 START
 75.0 START
 80.0 START
-84.0 A
+# Main menu (reached by ~45 s on the 2026-10-29 run): Down to Singleplayer, then A.
+84.0 DOWN
+86.0 A
 87.0 A
 90.0 A
 93.0 A

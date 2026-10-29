@@ -6,35 +6,74 @@ things live. Update it at the end of every session; the next model starts here, 
 history.
 
 ## Where it stands
-**M0 in progress: the repository is bootstrapped; codegen and the first build await the user's
-OK.** (2026-10-29)
+**M1 done: the game boots on the Xenos plugin's Vulkan backend, plays its Bink logos, draws the
+title screen and the main menu, and an autopilot Start press gets there (2026-10-29).** Next: M2,
+a level.
 
-Done 2026-10-29, before any build:
-- The repository from `../quake4-360-recomp` (tracked files only), every Quake 4 name renamed
-  (`lotrc`, `LotrConquestApp`, `lotrc_*` options, `Lotrc*` hooks, `LOTRC_XEX_KEY`). A fresh
-  `port/lotrc_manifest.toml` with no function hints yet. `port/src` is Quake 4's host code
-  unchanged in behaviour: Vulkan-only plugin load, crash reporter, frame timing, shared
-  controllers, autopilot, the FPSCR guard (not hooked until a boot needs it).
-- `default.xex` and `sku.bin` extracted into `port/assets` (hash checked, FINDINGS.md); the
-  full disc extraction is still to run (`tools/extract.ps1`, 5.4 GB).
-- The decrypted image in `private/xex/` (`xexdump`), and recon from it (FINDINGS.md): all 255
-  imports implemented in the SDK; engine and middleware identified.
-- `tools/audit_repo.py` extended with this game's formats (`.pak`, `.pck`, `.gfx`, `.dds`,
-  `.dat`); its tests pass.
+### Run 3 (2026-10-29, `tools/autopilot/menu.txt`; log `port/logs/smoke-20261029-002656.log`)
+Captures in `private/captures/lotrc-menu1-20261029-002656/`, one every 5 s.
+- Start at 30-40 s skipped the logos; `XamShowDeviceSelectorUI` at +40 s (the storage prompt,
+  answered by the pad through `ui_pad.cpp`); the shell's "Saving... This game saves data
+  automatically" notice over the main menu at +45 s; the **main menu** (Multiplayer,
+  Singleplayer, Options, Marketplace, "B Back / A Select") clean at +70 s, with the attract
+  backdrop (a Bink loop) behind it.
+- The script's A presses took Multiplayer, which shows "You must be signed into an Xbox LIVE
+  enabled gamer profile" (expected: no Live) and loops on A. Next run: Down, then A into
+  Singleplayer.
+- No crash, no new kernel errors.
+
+### Run 2 (2026-10-29, no input, 90 s; log `smoke-20261029-002439.log`)
+Captures in `private/captures/lotrc-boot2-20261029-002439/`.
+- Bink logos (the Pandemic ink animation at +6-11 s, the EA and New Line logos after), then
+  the **title screen** ("Press START button", (c) 2009 Electronic Arts) from ~+50 s, with its
+  animated battle backdrop. Everything drawn correctly on the fbo render-target path; no band
+  or tint (DOAX2's #menu-red didn't show), so FSI isn't needed so far.
+- **30 presents a second** the whole run, from +1 s: the game paces itself at 30 Hz.
+- Kernel noise, none fatal: `cache:\` has no device (StfsCreateDevice stub);
+  `game:udio\English(US)\` opened 8 times and missing on the disc (the English audio lives in
+  `audio/sound.pck`; a localisation probe); `ObReferenceObject`, `IoDismountVolume`,
+  `NetDll_XNetUnregisterKey` stubs; two "allocation to devkit memory area" warnings.
+- Not seen: fibers (no `rexcrt` hooks needed so far), FP exceptions on the audio worker (the
+  FPSCR guard is still unhooked), `XamShowSigninUI`.
+
+### Run 1 (2026-10-29, first boot; log `smoke-20261029-002216.log`)
+Vulkan on the RTX 4090, presents from +1.9 s, audio driver registered at +3 s, then "Call to
+invalid or unregistered function at 0x82469EE8": a 5-instruction vtable method
+(`mr r10,r3; lwz r11,4(r10); addi r3,r11,1; stw; blr`) with no `.pdata` entry, referenced from a
+method table at 0x82026F1C. It was in the missed-function finder's list: manifest round 3.
+
+### Build and codegen rounds (2026-10-29)
+Six builds (`private/build-1..6.log`), each a few minutes (codegen ~15 s, 145 objects):
+1. codegen refused three `b` targets outside any function: three leaf thunks (round 1);
+2. built the translation but four "use of undeclared label loc_8256A1xx" compile errors, and
+   two "Unresolved conditional branch to 0x824BA828" warnings;
+3. explicit `.pdata` sizes for the three functions around the labels changed nothing (the
+   output was byte-identical), which pointed away from function bounds;
+4. `tools/check_switch_tables.py` found the cause: two **byte-indexed jump tables**
+   (`lbzx` from a byte table, target = base + 4*byte) that the analyser sized at 512 and 147
+   cases where the image's tables hold 11 and 47 bytes before the next table; the phantom
+   cases pointed into the following functions and pulled their blocks in. Two
+   `[[entrypoint.switch_tables]]` overrides (round 2), plus `0x824BA800 = { size = 0x54 }` for
+   a leaf the analyser cut at its first `blr`. `lotrc.exe` linked (48 MB);
+5. round 3, the finder's 122 candidates: 88 "Unresolved conditional branch" warnings, all
+   inside two `.pdata` functions that two candidates split;
+6. those two dropped (eight other candidates also sit inside `.pdata` functions but warn
+   nothing, kept as Quake 4 kept its landing pads): clean.
+Checks after the final codegen: 282 switches, 0 wrong; no vpkd3d128 hazards in 73,671 vector
+instructions; `find_vcall_thunks.py` 0 forwarders; the finder's remaining candidates are the
+two dropped ones.
+
+The SDK DLLs beside the program are the Vulkan-only install's (hashes checked).
 
 ## Next steps
-1. **Codegen and the first build (needs the user's OK):** `tools/build.ps1`. Expect codegen
-   warnings naming `b` targets outside any function (manifest round 1, as Quake 4's), then run
-   the three checks (`check_switch_tables.py`, `check_vector_aliasing.py`,
-   `find_missed_functions.py`) and add round 2 wholesale, dropping candidates that split
-   functions.
-2. **First boot (M1):** `tools/smoke.ps1 -Seconds 60 -CaptureEvery 5`. Expect, from the sister
-   projects: XAPI fibers (DOAX2's `[entrypoint.rexcrt]` block), FP exceptions on the audio
-   worker (hook `LotrcGuardFpscr`), network probes failing harmlessly, `XamShowSigninUI` and the
-   device selector answered by `--headless`, Bink logos (EA, New Line, Pandemic, Tolkien), then
-   `Levels/shell.BIN` (the front end). If the frame has a wrong band or tint, try
-   `--render_target_path_vulkan=fsi` (DOAX2's red band was the fbo path's EDRAM handling).
-3. **Autopilot through the menus** (`tools/autopilot/`), captures of the main menu, then a level.
+1. **Into a level (M2):** `tools/autopilot/menu.txt` with Down before A, then through
+   Singleplayer (campaign / Training) and the loading screen; `-Seconds 300 -CaptureEvery 5`.
+   Expect the first real 3D rendering problems here, and maybe fibers or FP exceptions once
+   Havok and the level threads start.
+2. **Reference captures** of the menu and the first level for later renderer comparisons.
+3. **Measure**: the game paces at 30 Hz; find the vblank wait before deciding how 60 would work.
+4. **CodeRabbit:** confirm it reviews pull request #1; if it doesn't, the repository has to be
+   added to the CodeRabbit GitHub App's repository list (the user's GitHub settings).
 
 ## How it is built and run
 ```
