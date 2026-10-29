@@ -10,7 +10,7 @@ import sys
 
 RATE = 48000
 FRAME = 256
-FRAMES_PER_SEC = RATE // FRAME  # 187.5: use 187 and drift a little
+# A second is 187.5 frames: each second reads from its boundary to the next one (187 or 188).
 NAMES = ["FL", "FR", "FC", "LFE", "BL", "BR"]
 
 
@@ -41,7 +41,7 @@ def main():
                 break
             if sec >= t_from and (t_to is None or sec < t_to) and (sec - int(t_from)) % every == 0:
                 f.seek(start * frame_bytes)
-                count = min(FRAMES_PER_SEC, n_frames - start)
+                count = min(int((sec + 1) * RATE / FRAME), n_frames) - start
                 data = f.read(count * frame_bytes)
                 vals = struct.unpack(">%df" % (count * 6 * FRAME), data)
                 sums = [0.0] * 6

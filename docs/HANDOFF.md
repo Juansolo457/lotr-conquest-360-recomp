@@ -139,7 +139,7 @@ The SDK DLLs beside the program are the Vulkan-only install's (hashes checked).
 0. **The distortion effects** (above): a RenderDoc capture with the effect on screen, then
    the coordinate math. The torch blot and the black blob may be the same bug.
 1. **Play through Training (M2):** `tools/autopilot/training.txt` (run, look, attack, block,
-   jump in a loop from +140 s) with `-Seconds 420 -CaptureEvery 5`; look at every capture for
+   jump in a loop from +140 s) with `-Seconds 430 -CaptureEvery 5`; look at every capture for
    rendering bugs (particles, water, shadows, the HUD's radar, post effects), then the first
    campaign level (Helm's Deep) the same way.
 2. **Cheaper readback:** `fast` copies every resolve back each frame. If a level is ever

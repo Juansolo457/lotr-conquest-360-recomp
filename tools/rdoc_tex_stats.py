@@ -29,6 +29,7 @@ def walk(actions):
             yield from walk(a.children)
 
 
+failed = False
 try:
     rd.InitialiseReplay(rd.GlobalEnvironment(), [])
     cap = rd.OpenCaptureFile()
@@ -74,6 +75,7 @@ try:
     cap.Shutdown()
 except Exception:  # noqa: BLE001
     p(traceback.format_exc())
+    failed = True
 finally:
     log.close()
-    os._exit(0)
+    os._exit(1 if failed else 0)

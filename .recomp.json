@@ -5,14 +5,14 @@
   "system": "Xbox 360",
   "type": "recomp",
   "original": {
-    "region": "USA"
+    "region": "USA/Asia"
   },
   "project": "The Lord of the Rings: Conquest 360 Recompiled",
   "status": "in-progress",
   "targets": ["Windows"],
   "toolchain": "Rexglue",
   "approach": "The 360 default.xex statically recompiled to x86-64 C++ with ReXGlue, a game-specific runtime standing in for the Xbox, drawn by the SDK's Xenos renderer on Vulkan only (no D3D12). Windows first, then native Linux and the Steam Deck.",
-  "notes": "Boots on Windows through the logos and menus into the Training level, which plays with correct rendering (Pandemic's Magellan engine, Havok, Scaleform, Wwise). Fixed so far: levels washed out to white (the game reads its exposure luminance back from a resolve on the CPU) and blown-out audio (a 2^x underflow in the code generator). Next: the campaign, screen-space distortion effects, then Linux. No game data included: bring your own Xbox 360 copy.",
+  "notes": "Boots on Windows through the logos and menus into the Training level, which plays with correct rendering except the screen-space distortion effects (Pandemic's Magellan engine, Havok, Scaleform, Wwise). Fixed so far: levels washed out to white (the game reads its exposure luminance back from a resolve on the CPU) and blown-out audio (a 2^x underflow in the code generator). Next: the campaign, screen-space distortion effects, then Linux. No game data included: bring your own Xbox 360 copy.",
   "tags": ["vulkan", "steam-deck"],
   "maintainers": [{ "name": "Juansolo457", "link": "https://github.com/Juansolo457" }]
 }

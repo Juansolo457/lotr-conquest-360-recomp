@@ -82,9 +82,11 @@ class LotrConquestApp : public rex::ReXApp {
         // Xenia users hit the same and set d3d12_readback_resolve. "fast" copies each
         // resolve's result back one frame late and the levels keep the game's 30 Hz
         // (docs/HANDOFF.md, runs 4-6). The option lives in the plugin, so it is set by name
-        // once the plugin is loaded; a value given on the command line
-        // (--readback_resolve=none|some|full) is already applied then and is kept.
-        if (!rex::cvar::HasNonDefaultValue("readback_resolve")) {
+        // once the plugin is loaded; a value given on the command line, the environment or a
+        // config file (--readback_resolve=none|some|full) is already applied then and is kept,
+        // "none" included: the source is checked, not the value, since "none" is the SDK's
+        // default.
+        if (rex::cvar::GetFlagSource("readback_resolve") == rex::cvar::Source::kDefault) {
           rex::cvar::SetFlagByName("readback_resolve", "fast");
         }
         REXLOG_INFO("LOTRC: resolve readback '{}'", rex::cvar::GetFlagByName("readback_resolve"));

@@ -31,9 +31,9 @@ class TeeDriver : public rex::audio::AudioDriver {
  public:
   TeeDriver(rex::memory::Memory* memory, rex::audio::AudioDriver* inner, const std::string& path)
       : AudioDriver(memory), inner_(inner), start_(Clock::now()) {
-    pcm_ = std::fopen(path.c_str(), "ab");
-    times_ = std::fopen((path + ".txt").c_str(), "a");
-    raw6_ = std::fopen((path + ".6ch").c_str(), "ab");  // the frame as submitted: 6 x 256 BE floats
+    pcm_ = std::fopen(path.c_str(), "wb");
+    times_ = std::fopen((path + ".txt").c_str(), "w");
+    raw6_ = std::fopen((path + ".6ch").c_str(), "wb");  // the frame as submitted: 6 x 256 BE floats
     if (!pcm_) REXLOG_ERROR("LOTRC: audio dump: can't open {}", path);
     stereo_.resize(kChannelSamples * 2);
   }

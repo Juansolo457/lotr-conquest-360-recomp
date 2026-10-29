@@ -1,7 +1,8 @@
 # Through the menus into Training (as level.txt, the level is up by ~135 s), then play it:
 # run forward, look around, attack, block, jump, in a loop, so the training prompts advance and
-# the camera sees more of the level. For visual checks: -Seconds 420 -CaptureEvery 5.
-#   pwsh -NoProfile -File tools/smoke.ps1 -Seconds 420 -CaptureEvery 5 -Autopilot tools/autopilot/training.txt -Tag training
+# the camera sees more of the level. For visual checks: -Seconds 430 -CaptureEvery 5 (the
+# last event is at 425.5 s).
+#   pwsh -NoProfile -File tools/smoke.ps1 -Seconds 430 -CaptureEvery 5 -Autopilot tools/autopilot/training.txt -Tag training
 10.0 START
 20.0 START
 30.0 START
