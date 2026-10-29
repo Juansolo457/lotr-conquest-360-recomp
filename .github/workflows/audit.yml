@@ -1,0 +1,29 @@
+# No game material in what is pushed: tools/audit_repo.py on every push and pull request, over
+# every commit (--history, with the full history checked out): merge commits keep a branch's
+# history in master, so a file added and deleted on a branch must fail too. It reads git's blobs
+# and fails on game files, executables or archives, generated translations of the game's code,
+# shader warm-up lists and known keys.
+# It catches common accidents, not every copyright question (see the script's header).
+name: audit
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # The audit runs code from the pull request and only reads local history: leave no
+          # token in the checkout's git config for it to read.
+          persist-credentials: false
+      - name: Test the audit
+        run: python3 -I tools/test_audit_repo.py
+      - name: Check every commit for game material
+        run: python3 -I tools/audit_repo.py --history

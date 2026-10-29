@@ -1,0 +1,37 @@
+// LOTRC 360 - a scripted virtual controller for unattended tests.
+//
+// With --lotrc_autopilot <script> the host adds one more controller to the input system. It plays
+// a timetable of button presses and stick positions from the script, measured from when the
+// program starts, and needs no window focus, so tests can drive the game (through menus into a
+// mission) while the user keeps using the PC. With shared controllers on (the default) it drives
+// player 1 alongside any real pad. A script can also drive players 2-4, each a controller of its
+// own, which take their own player slots with shared controllers off (CreatePlayerSlots).
+//
+// Script: one event per line, '#' starts a comment.
+//   <seconds> <button>[+<button>...] [hold <seconds>]       press, default hold 0.15 s
+//   <seconds> stick <lx> <ly> <rx> <ry> hold <seconds>       -1.0 .. 1.0
+//   <seconds> trigger <lt> <rt> hold <seconds>               0.0 .. 1.0
+//   <seconds> P<n> <any of the above>                        player n's controller (1-4)
+// Buttons: A B X Y START BACK LB RB LS RS UP DOWN LEFT RIGHT.
+// Example (tools/autopilot/campaign-newgame.txt): from the campaign menu into the tutorial.
+
+#pragma once
+
+#include <memory>
+#include <string>
+
+#include <rex/input/device_assignment.h>
+#include <rex/input/input_driver.h>
+
+namespace lotrc::autopilot {
+
+// The driver for --lotrc_autopilot, or null when the option is empty or the script is unreadable.
+std::unique_ptr<rex::input::InputDriver> Create();
+
+// One controller per player slot, for split-screen (lotrc_shared_controllers off): as the SDK's
+// SlotAssignment, the first pad connected is player 1, the next player 2 and so on (a pad that
+// disconnects keeps its slot free), and the keyboard drives player 1. The autopilot's players
+// 2-4 take their own slots.
+std::unique_ptr<rex::input::DeviceAssignment> CreatePlayerSlots();
+
+}  // namespace lotrc::autopilot

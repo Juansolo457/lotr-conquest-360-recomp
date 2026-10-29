@@ -1,0 +1,27 @@
+lotr-conquest-360-recomp: licensing notice
+
+This repository mixes code under two sets of terms. The full license texts are in LICENSE (MIT)
+and LICENSES/. Copied BSD code keeps its own terms: it isn't relicensed as MIT.
+
+1. This project's own code: MIT (LICENSE)
+   tools/ (except tools/patches/), docs/, port/src/, port/CMakeLists.txt, the manifest and the
+   top-level files, except where a file's header says otherwise. Most of tools/ and port/src/
+   come from the sibling quake4-360-recomp, doax2-360-recomp, graw360-recomp, fear360-recomp and
+   n3-360-recomp projects (MIT, same author). AGENTS.md, CLAUDE.md, .mcp.json and .claude/ come
+   from the agent-harness template (same author).
+
+2. BSD-3-Clause (LICENSES/ReXGlue-BSD-3-Clause.txt, LICENSES/Xenia-BSD-3-Clause.txt)
+   - port/generated/rexglue.cmake, port/CMakePresets.json and the initial port/src files were
+     produced by `rexglue init` from the ReXGlue SDK (https://github.com/rexglue/rexglue-sdk,
+     BSD-3-Clause, derived in part from Xenia). This is SDK build scaffolding, not a translation
+     of game code.
+   - tools/patches/*.patch are changes to the SDK (from graw360-recomp; tools/patches/pgr4-native/
+     from pgr4-native, https://github.com/shaunsingh/pgr4-native), under the SDK's BSD-3-Clause
+     license; their context lines are ReXGlue and Xenia code.
+   - third_party/rexglue-sdk-bd833a2 (not tracked) is ReXGlue's source with those patches; its
+     license and Xenia's notices apply, and the libraries in its thirdparty/ keep their own.
+
+The Lord of the Rings and the names of the characters, items, events and places therein are
+trademarks of Middle-earth Enterprises. This project isn't affiliated with Pandemic Studios,
+Electronic Arts, Middle-earth Enterprises, New Line Cinema, Warner Bros. or Microsoft, and
+contains none of the game's code or data.

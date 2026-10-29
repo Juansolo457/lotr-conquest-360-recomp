@@ -1,0 +1,81 @@
+# What must never be committed: anything from the game (its files, executables, images,
+# translations of its code, data derived from it, keys) and anything built from it. .gitignore
+# only keeps untracked files out: it doesn't untrack files or clean history. tools/audit_repo.py
+# checks what is tracked and staged, and CI runs it on every push (README.md, "Legal").
+# Port folders: port/ (default.xex); the /port*/ rules cover any later one too.
+
+# --- The game: your disc and everything extracted, decrypted, dumped or captured from it ---
+# private/ holds the disc, decrypted images, captures and logs kept for analysis.
+private/
+/port*/assets
+*.iso
+*.xex
+*.xbe
+*.god
+*.stfs
+*.bik
+
+*.xwb
+*.mp3
+# Shader dumps (--dump_shaders=<dir>; a bare --dump_shaders writes to <port>/true/)
+/port*/true/
+/port*/logs/shaders*/
+
+# --- Generated translations of the game's code ---
+# generated/<name>/ is the recompiled game (rexglue codegen output: default/).
+# generated/rexglue.cmake beside it is the SDK's build scaffolding
+# (BSD-3-Clause, NOTICE) and stays tracked.
+/port*/generated/*/
+
+# --- Local keys and secrets ---
+# tools/xex_basic_decrypt.py reads its key from LOTRC_XEX_KEY or this file; never commit a key.
+/tools/xex_key.txt
+*.key
+
+# --- Runtime state: logs, saves, settings, shader and pipeline caches, crash dumps ---
+/port*/logs/
+/port*/user*/
+/port*/cache*/
+*.log
+*.dmp
+
+# --- Build output (programs built from the game's code) and packages ---
+/port*/out/
+build/
+out/
+*.exe
+*.dll
+*.lib
+*.obj
+*.pdb
+*.ilk
+*.zip
+*.7z
+*.rar
+
+# --- Toolchain junction (../n3-360-recomp/reference/N3-Recomp/.tools) and SDK copies ---
+.tools/
+third_party/
+
+# --- Editor / OS ---
+.vscode/
+.vs/
+.idea/
+__pycache__/
+Thumbs.db
+.DS_Store
+# LOTR: Conquest's own formats (port/assets is ignored already; these catch stray copies):
+# level archives, Wwise sound banks, Scaleform movies, textures
+*.pak
+*.pck
+*.gfx
+*.dds
+
+# --- Agent harness (from the agent-harness template) ---
+.claude/settings.local.json
+.env
+.env.*
+!.env.example
+# Playwright MCP page snapshots, and its browser profile with your signed-in cookies.
+.playwright-mcp/
+profile/

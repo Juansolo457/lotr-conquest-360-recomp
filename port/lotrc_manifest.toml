@@ -1,0 +1,20 @@
+# The Lord of the Rings: Conquest (Xbox 360), Redump "Lord of the Rings, The - Conquest (USA, Asia)
+# (En,Fr,Es)": default.xex v0.0.0.1, title 45410852, built 2008-11-26,
+# SHA-256 1e49a80be633b78e2d84b8b8b099fc401e5e0129d0fe606a6c54b64606085403 (tools/build.ps1 checks it).
+# Scaffold as `rexglue init` writes it (ReXGlue v0.10.0.24-dev.gbd833a2). Function hints go below
+# in rounds, each with a comment saying where it came from (codegen warnings,
+# tools/find_missed_functions.py, tools/check_switch_tables.py, tools/find_vcall_thunks.py).
+# Fix missing functions here, never in the generated code.
+
+[project]
+name = "lotrc"
+sdk_version = "0.10.0"
+game_root = "assets"
+
+[entrypoint]
+file_path = "assets/default.xex"
+out_directory_path = "generated/default"
+includes = []
+
+[entrypoint.functions]
+# Round 1: none yet (the first codegen run fills this).
