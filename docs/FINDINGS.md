@@ -48,6 +48,11 @@ Sections (`private/xex/default.sections.txt`, from `xexdump`):
 | .XBLD | `0x82CF0000` | `0xA0` |
 | .reloc | `0x82CF0200` | `0x784E8` |
 
+Virtual-call forwarders are mostly `lwz r11,0(r3); lwz r11,N(r11); mtctr r11; bctr` (Quake 4
+uses r10 for the second load), often after `this`-adjusting loads. Registered ones are pointed
+at from vtables in `.rdata`; the 8 the translation leaves out have no pointer, branch or
+`lis`/`addi` reference anywhere (2026-10-29, `tools/find_vcall_thunks.py`).
+
 ### Imports: all implemented
 255 kernel and XAM functions (`private/xex/default.symbols.txt`), every one with an
 implementation in the SDK (ReXGlue `bd833a2`): checked 2026-10-29 by matching the names
