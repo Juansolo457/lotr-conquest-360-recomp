@@ -17,4 +17,190 @@ out_directory_path = "generated/default"
 includes = []
 
 [entrypoint.functions]
-# Round 1: none yet (the first codegen run fills this).
+# Round 1 (2026-10-29): the first codegen run reported these as `b` targets "not in any
+# function". Each is a leaf with no .pdata entry, right after the function before it; checked by
+# disassembly (private/xex/default.bin).
+0x82479930 = {}   # this-adjusting thunk (addi r3,r3,4; b 0x82473118), tail-called from 0x82479D0C
+0x823A3E88 = {}   # 4-instruction copy of two words from r4 into r3+0x28, blr; tail-called from 0x823992B4
+0x824779B8 = {}   # a single `b 0x82477640` (a thunk in a thunk table), tail-called from 0x824789FC
+
+# Round 2 (2026-10-29, second codegen): two shapes the analyser gets wrong.
+# - 0x824BA800 is a leaf (no .pdata entry) whose first `blr` is at +0x2C and whose code goes on
+#   to +0x50 (two `beq` back to the `li r3,0; blr` at +0x28): cut at the blr, the tail was
+#   orphaned ("Unresolved conditional branch to 0x824BA828"). The size covers it.
+0x824BA800 = { size = 0x54 }
+0x82229948 = {}  # from 0x82078108
+0x822354E8 = {}  # from 0x82078148
+0x82236C64 = {}  # from 0x82078190
+0x82236DDC = {}  # from 0x820781A0
+0x82450A64 = {}  # from 0x820782D8
+0x8245AA48 = {}  # from 0x82078400
+0x8245CCCC = {}  # from 0x82078480
+0x8245DD58 = {}  # from 0x820784F8
+
+# Round 3 (2026-10-29): tools/find_missed_functions.py on the decrypted image after the first
+# build, 122 candidates (referenced from data: method tables and callbacks; or built in code),
+# added wholesale as in the sister projects. The first boot died at +3 s on "Call to invalid or
+# unregistered function at 0x82469EE8" (a 5-instruction vtable method, in this list). A
+# candidate that splits a function shows up as an Unresolved codegen warning and is dropped.
+# Dropped from round 3: inside a .pdata function and splitting it (build-5 codegen warned
+# "Unresolved conditional branch" across the split, 88 times):
+#   0x821B48BC inside 0x821B4870 # built in code, after a bl
+#   0x821B58FC inside 0x821B58B8 # built in code, after a bl
+# Kept although inside a .pdata function (no warning: nothing branches across them; likely
+# structured-exception landing pads or secondary entries, as Quake 4's round 2):
+#   0x82229948 inside 0x822296C8
+#   0x822354E8 inside 0x82235450
+#   0x82236C64 inside 0x822365B8
+#   0x82236DDC inside 0x822365B8
+#   0x82450A64 inside 0x82450968
+#   0x8245AA48 inside 0x8245A9F0
+#   0x8245CCCC inside 0x8245CC08
+#   0x8245DD58 inside 0x8245DCB0
+0x820D3C08 = {}  # from 0x82043834
+0x820E7208 = {}  # from 0x82052AC8
+0x820EA520 = {}  # from 0x82053ECC
+0x820F3E28 = {}  # from 0x8205570C
+0x820F3E40 = {}  # from 0x820557D0
+0x8211CA88 = {}  # from 0x82060918
+0x8211CC60 = {}  # built in code
+0x8211CC70 = {}  # from 0x82060E08
+0x82145240 = {}  # from 0x82067420
+0x82145258 = {}  # from 0x82067424
+0x82150940 = {}  # from 0x82067E44
+0x82159C00 = {}  # from 0x8201D8A4
+0x8215E1C8 = {}  # from 0x82068430
+0x8215E310 = {}  # from 0x82068864
+0x8215E410 = {}  # from 0x820241E4
+0x8215E430 = {}  # from 0x82068870
+0x82166CA8 = {}  # from 0x82068B10
+0x8216BCB8 = {}  # from 0x8206A6C8
+0x8216BCD0 = {}  # from 0x8206A6B0
+0x8216BCE8 = {}  # from 0x8206A6CC
+0x8216BD00 = {}  # from 0x8206A6B4
+0x8216BD18 = {}  # from 0x8206A6B8
+0x8216BD30 = {}  # from 0x8206A6BC
+0x8216BD48 = {}  # from 0x8206A6C0
+0x8216BD60 = {}  # from 0x8206A6C4
+0x821892D0 = {}  # from 0x8206ACE8
+0x8219A968 = {}  # from 0x8206C898
+0x8219CEA0 = {}  # from 0x8206BBD8
+0x821A7630 = {}  # from 0x8206BCC8
+0x821AACE8 = {}  # from 0x8206A8C8
+0x821BAA48 = {}  # from 0x8206A624
+0x821BAA70 = {}  # from 0x8206A62C
+0x821BAA98 = {}  # from 0x8206A630
+0x821CB7B0 = {}  # from 0x8206D2E8
+0x821DB2E0 = {}  # from 0x8206E258
+0x821E3C70 = {}  # from 0x8206EE30
+0x822282D8 = {}  # from 0x820711F8
+0x82250DA0 = {}  # built in code
+0x822C3EA8 = {}  # built in code
+0x822C3ED0 = {}  # built in code
+0x822C3EF8 = {}  # built in code
+0x822C3F10 = {}  # built in code
+0x822C3F28 = {}  # built in code
+0x822C3F40 = {}  # built in code
+0x822C3F58 = {}  # built in code
+0x82399020 = {}  # from 0x820150C8
+0x823A0958 = {}  # from 0x820165F0
+0x823B4800 = {}  # from 0x8201780C
+0x823C1B18 = {}  # from 0x82017B18
+0x823D7F80 = {}  # from 0x8201D1B0
+0x823E8AA8 = {}  # from 0x8201FE80
+0x823E8AC0 = {}  # from 0x8201FE84
+0x823E9BA0 = {}  # built in code
+0x823E9EB0 = {}  # built in code
+0x823E9EC0 = {}  # built in code
+0x823E9ED0 = {}  # built in code
+0x823E9EE0 = {}  # built in code
+0x823E9EF0 = {}  # built in code
+0x823E9F00 = {}  # built in code
+0x823E9F20 = {}  # built in code
+0x823EC830 = {}  # from 0x8201F680
+0x823EC848 = {}  # from 0x8201F688
+0x823ED098 = {}  # from 0x8201FA38
+0x82400CA8 = {}  # from 0x8201FBFC
+0x82400CC0 = {}  # from 0x8201FC08
+0x82400CD8 = {}  # from 0x8201FC04
+0x82400CF0 = {}  # from 0x8201FC2C
+0x824015D8 = {}  # from 0x8201FD3C
+0x824015E0 = {}  # from 0x8201FD4C
+0x824015E8 = {}  # from 0x8201FD48
+0x824015F0 = {}  # from 0x8201FD20
+0x824015F8 = {}  # from 0x8201FD54
+0x82401608 = {}  # from 0x8201FDE4
+0x82401648 = {}  # from 0x8201FCFC
+0x82410098 = {}  # from 0x82020400
+0x824100B0 = {}  # built in code
+0x824100C0 = {}  # built in code
+0x824100D0 = {}  # built in code
+0x824100F0 = {}  # built in code
+0x82410120 = {}  # built in code
+0x82410130 = {}  # built in code
+0x82410140 = {}  # built in code
+0x82410160 = {}  # built in code
+0x82410170 = {}  # built in code
+0x82427368 = {}  # from 0x82021658
+0x824370E0 = {}  # from 0x82024370
+0x824370F8 = {}  # from 0x8202435C
+0x82469EE8 = {}  # from 0x82026F1C
+0x8246D928 = {}  # from 0x82026FA0
+0x8246D970 = {}  # from 0x82026F94
+0x82471920 = {}  # from 0x82027308
+0x82472248 = {}  # from 0x82027398
+0x82477998 = {}  # from 0x82028250
+0x824779A8 = {}  # from 0x82028238
+0x82479CF0 = {}  # from 0x8202824C
+0x82479CF8 = {}  # from 0x82028224
+0x82479D00 = {}  # from 0x82028348
+0x82479D18 = {}  # from 0x82028324
+0x82479D38 = {}  # from 0x82028314
+0x82479D40 = {}  # from 0x82028358
+0x82535E20 = {}  # from 0x82064D3C
+0x825B6CF8 = {}  # from 0x8205C118
+0x825FF3B0 = {}  # from 0x8205556C
+0x8260BDF0 = {}  # from 0x820549EC
+0x826175E0 = {}  # from 0x82054384
+0x826175F0 = {}  # from 0x82054328
+0x8261BFC0 = {}  # from 0x82053CF8
+0x82623490 = {}  # from 0x82053B5C
+0x826235B0 = {}  # from 0x82053B1C
+0x82641448 = {}  # from 0x8204F7A0
+0x826F3A00 = {}  # from 0x8203FB80
+0x827676C8 = {}  # from 0x82060808
+
+# - Two byte-indexed jump tables (lbzx from a byte table, target = base + 4*byte) whose length
+#   the analyser guessed as 512 and 147 entries; the image's tables have 11 and 47 bytes before
+#   the next table starts. The extra "cases" pointed into the following functions, so
+#   sub_82569C50 swallowed blocks of 0x82569FA8 and 0x8256A060 (four "undeclared label"
+#   compile errors). tools/check_switch_tables.py found both; the bounds are read from the
+#   tables themselves (private/xex/default.bin at 0x8203BB70 and 0x8203B808).
+[[entrypoint.switch_tables]]   # in sub_82569C50, byte table 0x8203BB70, base 0x82569D68
+address = 0x82569D64
+register = 29
+labels = [
+  0x82569D68, 0x82569D90, 0x82569E0C, 0x82569DB8, 0x82569E84, 0x82569EA4,
+  0x82569EC4, 0x82569EF0, 0x82569F1C, 0x82569F3C, 0x82569F88,
+]
+
+[[entrypoint.switch_tables]]   # in sub_8254EED8, byte table 0x8203B808, base 0x8254EF00
+address = 0x8254EEFC
+register = 3
+labels = [
+  0x8254EF00, 0x8254EF08, 0x8254EF10, 0x8254EF18, 0x8254EF20, 0x8254EF28,
+  0x8254EF30, 0x8254EF38, 0x8254EF40, 0x8254EF48, 0x8254EF50, 0x8254EF58,
+  0x8254EF60, 0x8254EF68, 0x8254EF70, 0x8254EF78, 0x8254EF80, 0x8254EF88,
+  0x8254EF90, 0x8254EF98, 0x8254EFA0, 0x8254EFA8, 0x8254EFB0, 0x8254EFB8,
+  0x8254EFC0, 0x8254EFC8, 0x8254EFD0, 0x8254EFD8, 0x8254EFE0, 0x8254EFE8,
+  0x8254EFF0, 0x8254EFF8, 0x8254F000, 0x8254F008, 0x8254F010, 0x8254F018,
+  0x8254F020, 0x8254F028, 0x8254F030, 0x8254F038, 0x8254F040, 0x8254F048,
+  0x8254F050, 0x8254F058, 0x8254F060, 0x8254F068, 0x8254F070,
+]
+
+# The game's own frame rate and the RenderDoc capture trigger (src/frame_timing.cpp): just
+# before its one call to VdSwap, the bl at 0x82129F70 (2026-10-29). DOAX2's Doax2FrameMark.
+[[entrypoint.midasm_hook]]
+name = "LotrcFrameMark"
+address = 0x82129F70
+registers = []

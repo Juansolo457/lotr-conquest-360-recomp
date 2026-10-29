@@ -50,9 +50,9 @@ Scaleform GFx menus, Wwise audio, Bink video and Lua 5.1 scripting. See FINDINGS
 ## Milestones
 | # | Milestone | Done when |
 |---|---|---|
-| M0 | **Repo, toolchain, first translation** | Repo public and locked; Vulkan-only SDK; disc extracted; codegen clean (0 wrong switch tables, no vpkd3d128 hazards, missed-function finder at a fixed point); `lotrc.exe` links |
-| M1 | **Drawn frames and the menus** | Boots on the Xenos plugin's Vulkan backend: logo videos, the shell (main menu) draws and a controller moves through it. Crash reporter and frame log from the first run. Reference captures |
-| M2 | **A level plays** | Training or a campaign level loads and plays; saves; the HUD draws; a first pass on visual bugs against console footage |
+| M0 (done 2026-10-29) | **Repo, toolchain, first translation** | Repo public and locked; Vulkan-only SDK; disc extracted; codegen clean (0 wrong switch tables, no vpkd3d128 hazards, missed-function finder at a fixed point); `lotrc.exe` links |
+| M1 (done 2026-10-29) | **Drawn frames and the menus** | Boots on the Xenos plugin's Vulkan backend: logo videos, the shell (main menu) draws and a controller moves through it. Crash reporter and frame log from the first run. Reference captures |
+| M2 (in progress) | **A level plays** | Training or a campaign level loads and plays; saves; the HUD draws; a first pass on visual bugs against console footage |
 | M3 | **Windows playable** | Campaign start to finish; resolution scale; steady pacing (frame-time logs); the user's play-test |
 | M4 | **Native Linux and the Deck** | GRAW's podman/Ubuntu 22.04 build; the package in `~/recomps/LOTRConquest-360-SteamDeck/`; the user's Deck runs |
 | M5 | **Performance and extras** | Measured bottlenecks (CPU per draw, GPU time); decide on a native renderer; source-only release with SETUP for Windows and Linux |

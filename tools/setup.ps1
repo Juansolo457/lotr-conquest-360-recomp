@@ -34,13 +34,15 @@ $sdkCommit = 'bd833a2ab69d305f99ddf57418fc38ffec8af93d'
 #   implicit-gradients-switch  DXBC translator: a switch for 0021
 #   spirv-exp-adjust           SPIR-V translator: texture exponent bias read from the right word
 #   spirv-implicit-gradients   SPIR-V translator: 0021's switch for the Vulkan backend
+#   vexptefp-underflow         code generator: 2^x estimate flushed to 0 below 2^-127 (was garbage
+#                              gains: the blown-out audio, docs/HANDOFF.md)
 $sdkPatches = @('rexglue-bd833a2-vpkd3d128-alias', 'rexglue-bd833a2-freed-page-resolve',
                 'rexglue-bd833a2-vblank-pacing', 'rexglue-bd833a2-gpu-skip-draws',
                 'pgr4-native/0021-gpu-sample-computed-LOD-pixel-shader-fetches-with-sa',
                 'pgr4-native/0022-gpu-add-a-pixel-shader-modification-for-textures-kno',
                 'rexglue-bd833a2-implicit-gradients-switch', 'rexglue-bd833a2-spirv-exp-adjust',
-                'rexglue-bd833a2-spirv-implicit-gradients')
-$expectedTree = '54ab5932e76ba1b8c9e454891c9ba52c16bfdda0'   # after the last patch (same as GRAW's)
+                'rexglue-bd833a2-spirv-implicit-gradients', 'rexglue-bd833a2-vexptefp-underflow')
+$expectedTree = '12884d9f3cbcc28abdd88159c8ed93651bc9192d'   # after the last patch (GRAW's set + vexptefp-underflow)
 $install = Join-Path $sdk 'out\install\win-amd64'
 $stamp = Join-Path $install 'lotrc-sdk-tree'
 

@@ -20,7 +20,9 @@ resolution. Windows first, then native Linux and the Steam Deck, both on Vulkan.
 
 ## Status
 
-Just started: the toolchain and the first translation.
+The Training level plays through with correct rendering and sound (2026-10-29): logos, menus,
+the campaign map, combat, the HUD, on the SDK's Vulkan backend. Known: the screen-space
+distortion effects (heat haze, shockwaves) draw wrong. Next: the campaign levels.
 
 - [docs/PLAN.md](docs/PLAN.md): goals, decisions, milestones
 - [docs/HANDOFF.md](docs/HANDOFF.md): current state, how things work, where things live

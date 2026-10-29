@@ -78,6 +78,24 @@ Live, LAN and EA's Plasma backend), `XGetVideoMode`, `XGetGameRegion`.
 - Multiplayer: split-screen, LAN, Xbox Live (`xb360connectionstates`), EA Plasma
   (`MgShellConnectPlasmaMessage`); expect the shell to probe the network at start-up.
 
+### How it renders and sounds (from the runs, 2026-10-29)
+- **Render targets of a level**: the scene in `k_2_10_10_10_FLOAT` (7e3 HDR) 4xMSAA at EDRAM
+  base 0 with D24S8 at 720; bloom and luminance chains in `k_16_16_16_16` (fixed, base 1672)
+  and `k_16_16_16_16_FLOAT` (base 0) at 640, 320, 160 and 80 wide; shadow maps as a
+  `k_8_8_8_8` 560x4688 colour target and depth-only 880x2992 / 440x1496 4xMSAA targets; the HUD
+  and Scaleform in `k_8_8_8_8` at 1280x720. The final frame is a `k_2_10_10_10` resolve.
+- **Exposure is on the CPU**: a resolve of the luminance measurement is read back by the game
+  (`readback_resolve` must be on, or every level is white). Xenia users know this game for it.
+- **Screen-space effects** (shockwaves, sword trails, heat haze) sample a resolved copy of the
+  scene (1280x720 `k_16_16_16_16_FLOAT`) with projected coordinates plus a distortion offset.
+- **Audio**: the game registers one XAudio render driver client and mixes itself (Wwise),
+  submitting 6-channel 256-sample float frames; hardware XMA contexts decode the streams
+  (`XMACreateContext`). Wwise's dB-to-gain path uses the VMX `vexptefp` estimate (22 sites in
+  one module), which is how the code generator's underflow bug became audible.
+- The shell probes `cache:\` (no device: harmless), `game:\audio\English(US)\` (not on the
+  disc; the English audio lives in `sound.pck`) and the PS3 button textures
+  `flash\UI_ps3button_*` (not on the disc; harmless).
+
 ## Decrypting for analysis
 ```
 ..\quake4-definitive\build\xexdump\xexdump.exe port\assets\default.xex private\xex\default

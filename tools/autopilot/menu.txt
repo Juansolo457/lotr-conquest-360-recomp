@@ -1,0 +1,26 @@
+# Through the logos and the title screen into the main menu: Start pressed from the moment the
+# logos can be skipped until the title has gone, then A every 3 s to accept the sign-in and
+# storage prompts (ui_pad.cpp turns A into Enter for the runtime's dialogs). B is never pressed.
+#   pwsh -NoProfile -File tools/smoke.ps1 -Seconds 150 -CaptureEvery 5 -Autopilot tools/autopilot/menu.txt
+# Times are seconds from start-up on an RTX 4090 (2026-10-29 boot 2): logos from ~8 s, the
+# title screen ("Press START button") at ~60-90 s when nothing is pressed.
+10.0 START
+20.0 START
+30.0 START
+40.0 START
+50.0 START
+60.0 START
+65.0 START
+70.0 START
+75.0 START
+80.0 START
+# Main menu (reached by ~45 s on the 2026-10-29 run): Down to Singleplayer, then A.
+84.0 DOWN
+86.0 A
+87.0 A
+90.0 A
+93.0 A
+96.0 A
+99.0 A
+102.0 A
+105.0 A

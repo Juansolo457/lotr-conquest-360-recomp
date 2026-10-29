@@ -5,8 +5,8 @@ translated from your copy of the Xbox 360 disc on your own PC, and the game data
 same disc. You need your own disc of **The Lord of the Rings: Conquest** for the Xbox 360, the
 USA/Asia release (see step 3).
 
-> Early days: the game builds toward its first boot; there is nothing to play yet. See
-> [HANDOFF.md](HANDOFF.md) for where it stands.
+> Early days: the game boots to its main menu; levels are next. See [HANDOFF.md](HANDOFF.md)
+> for where it stands.
 
 The first setup takes about an hour, most of it compiling the ReXGlue SDK. After that, rebuilds
 take a few minutes.

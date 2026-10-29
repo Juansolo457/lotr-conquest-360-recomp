@@ -18,6 +18,7 @@ include(generated/rexglue.cmake)
 
 set(LOTRC_SOURCES
     src/main.cpp
+    src/audio_dump.cpp
     src/crash_report.cpp
     src/autopilot.cpp
     src/ui_style.cpp
