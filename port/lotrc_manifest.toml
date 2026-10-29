@@ -197,3 +197,10 @@ labels = [
   0x8254F020, 0x8254F028, 0x8254F030, 0x8254F038, 0x8254F040, 0x8254F048,
   0x8254F050, 0x8254F058, 0x8254F060, 0x8254F068, 0x8254F070,
 ]
+
+# The game's own frame rate and the RenderDoc capture trigger (src/frame_timing.cpp): just
+# before its one call to VdSwap, the bl at 0x82129F70 (2026-10-29). DOAX2's Doax2FrameMark.
+[[entrypoint.midasm_hook]]
+name = "LotrcFrameMark"
+address = 0x82129F70
+registers = []

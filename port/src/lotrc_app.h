@@ -21,6 +21,7 @@
 #include <rex/ui/keybinds.h>
 #include <rex/ui/window.h>
 
+#include "audio_dump.h"
 #include "autopilot.h"
 #include "crash_report.h"
 #include "ui_pad.h"
@@ -75,10 +76,24 @@ class LotrConquestApp : public rex::ReXApp {
         // Vulkan renderer draws: a bring-up step only, never what ships. With the native
         // renderer the plugin keeps the command ring and the presenter (--gpu_skip_draws).
         REXLOG_INFO("LOTRC: GPU plugin '{}', Vulkan backend", config.gpu_plugin);
+        // The game reads its own resolves back on the CPU (its exposure control reads the
+        // scene's measured luminance out of a resolve). Without the readback guest memory
+        // keeps stale values, the exposure runs away and every level is white, HUD aside;
+        // Xenia users hit the same and set d3d12_readback_resolve. "fast" copies each
+        // resolve's result back one frame late and the levels keep the game's 30 Hz
+        // (docs/HANDOFF.md, runs 4-6). The option lives in the plugin, so it is set by name
+        // once the plugin is loaded; a value given on the command line
+        // (--readback_resolve=none|some|full) is already applied then and is kept.
+        if (!rex::cvar::HasNonDefaultValue("readback_resolve")) {
+          rex::cvar::SetFlagByName("readback_resolve", "fast");
+        }
+        REXLOG_INFO("LOTRC: resolve readback '{}'", rex::cvar::GetFlagByName("readback_resolve"));
       } else {
         REXLOG_ERROR("LOTRC: GPU plugin '{}' has no Vulkan backend", config.gpu_plugin);
       }
     }
+
+    lotrc::audio_dump::Install(config);  // --lotrc_audio_dump <file>: records the audio output
 
     if (config.input_factory) {
       config.input_factory = [base = config.input_factory](bool tool_mode) {

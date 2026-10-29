@@ -1,0 +1,184 @@
+# Through the menus into Training (as level.txt, the level is up by ~135 s), then play it:
+# run forward, look around, attack, block, jump, in a loop, so the training prompts advance and
+# the camera sees more of the level. For visual checks: -Seconds 420 -CaptureEvery 5.
+#   pwsh -NoProfile -File tools/smoke.ps1 -Seconds 420 -CaptureEvery 5 -Autopilot tools/autopilot/training.txt -Tag training
+10.0 START
+20.0 START
+30.0 START
+40.0 START
+50.0 START
+60.0 START
+65.0 START
+70.0 START
+75.0 START
+80.0 START
+84.0 DOWN
+86.0 A
+89.0 A
+92.0 A
+95.0 A
+98.0 A
+101.0 A
+104.0 A
+107.0 A
+110.0 A
+113.0 A
+116.0 A
+119.0 A
+122.0 A
+125.0 A
+128.0 A
+131.0 A
+140.0 stick 0 1 0 0 hold 4
+144.5 stick 0 0 0.8 0 hold 1.5
+146.5 X
+147.2 X
+147.9 X
+149.0 Y hold 0.8
+150.5 A
+151.5 stick 0.9 0.3 0 0 hold 3
+155.0 B hold 1.0
+156.5 trigger 1 0 hold 1.0
+158.0 trigger 0 1 hold 1.0
+159.5 stick 0 0 -0.8 0 hold 1.5
+161.5 RB
+162.5 LB
+163.5 stick 0 1 0 0 hold 4
+168.0 stick 0 0 0 -0.6 hold 1
+169.5 A
+172.0 stick 0 1 0 0 hold 4
+176.5 stick 0 0 0.8 0 hold 1.5
+178.5 X
+179.2 X
+179.9 X
+181.0 Y hold 0.8
+182.5 A
+183.5 stick 0.9 0.3 0 0 hold 3
+187.0 B hold 1.0
+188.5 trigger 1 0 hold 1.0
+190.0 trigger 0 1 hold 1.0
+191.5 stick 0 0 -0.8 0 hold 1.5
+193.5 RB
+194.5 LB
+195.5 stick 0 1 0 0 hold 4
+200.0 stick 0 0 0 -0.6 hold 1
+201.5 A
+204.0 stick 0 1 0 0 hold 4
+208.5 stick 0 0 0.8 0 hold 1.5
+210.5 X
+211.2 X
+211.9 X
+213.0 Y hold 0.8
+214.5 A
+215.5 stick 0.9 0.3 0 0 hold 3
+219.0 B hold 1.0
+220.5 trigger 1 0 hold 1.0
+222.0 trigger 0 1 hold 1.0
+223.5 stick 0 0 -0.8 0 hold 1.5
+225.5 RB
+226.5 LB
+227.5 stick 0 1 0 0 hold 4
+232.0 stick 0 0 0 -0.6 hold 1
+233.5 A
+236.0 stick 0 1 0 0 hold 4
+240.5 stick 0 0 0.8 0 hold 1.5
+242.5 X
+243.2 X
+243.9 X
+245.0 Y hold 0.8
+246.5 A
+247.5 stick 0.9 0.3 0 0 hold 3
+251.0 B hold 1.0
+252.5 trigger 1 0 hold 1.0
+254.0 trigger 0 1 hold 1.0
+255.5 stick 0 0 -0.8 0 hold 1.5
+257.5 RB
+258.5 LB
+259.5 stick 0 1 0 0 hold 4
+264.0 stick 0 0 0 -0.6 hold 1
+265.5 A
+268.0 stick 0 1 0 0 hold 4
+272.5 stick 0 0 0.8 0 hold 1.5
+274.5 X
+275.2 X
+275.9 X
+277.0 Y hold 0.8
+278.5 A
+279.5 stick 0.9 0.3 0 0 hold 3
+283.0 B hold 1.0
+284.5 trigger 1 0 hold 1.0
+286.0 trigger 0 1 hold 1.0
+287.5 stick 0 0 -0.8 0 hold 1.5
+289.5 RB
+290.5 LB
+291.5 stick 0 1 0 0 hold 4
+296.0 stick 0 0 0 -0.6 hold 1
+297.5 A
+300.0 stick 0 1 0 0 hold 4
+304.5 stick 0 0 0.8 0 hold 1.5
+306.5 X
+307.2 X
+307.9 X
+309.0 Y hold 0.8
+310.5 A
+311.5 stick 0.9 0.3 0 0 hold 3
+315.0 B hold 1.0
+316.5 trigger 1 0 hold 1.0
+318.0 trigger 0 1 hold 1.0
+319.5 stick 0 0 -0.8 0 hold 1.5
+321.5 RB
+322.5 LB
+323.5 stick 0 1 0 0 hold 4
+328.0 stick 0 0 0 -0.6 hold 1
+329.5 A
+332.0 stick 0 1 0 0 hold 4
+336.5 stick 0 0 0.8 0 hold 1.5
+338.5 X
+339.2 X
+339.9 X
+341.0 Y hold 0.8
+342.5 A
+343.5 stick 0.9 0.3 0 0 hold 3
+347.0 B hold 1.0
+348.5 trigger 1 0 hold 1.0
+350.0 trigger 0 1 hold 1.0
+351.5 stick 0 0 -0.8 0 hold 1.5
+353.5 RB
+354.5 LB
+355.5 stick 0 1 0 0 hold 4
+360.0 stick 0 0 0 -0.6 hold 1
+361.5 A
+364.0 stick 0 1 0 0 hold 4
+368.5 stick 0 0 0.8 0 hold 1.5
+370.5 X
+371.2 X
+371.9 X
+373.0 Y hold 0.8
+374.5 A
+375.5 stick 0.9 0.3 0 0 hold 3
+379.0 B hold 1.0
+380.5 trigger 1 0 hold 1.0
+382.0 trigger 0 1 hold 1.0
+383.5 stick 0 0 -0.8 0 hold 1.5
+385.5 RB
+386.5 LB
+387.5 stick 0 1 0 0 hold 4
+392.0 stick 0 0 0 -0.6 hold 1
+393.5 A
+396.0 stick 0 1 0 0 hold 4
+400.5 stick 0 0 0.8 0 hold 1.5
+402.5 X
+403.2 X
+403.9 X
+405.0 Y hold 0.8
+406.5 A
+407.5 stick 0.9 0.3 0 0 hold 3
+411.0 B hold 1.0
+412.5 trigger 1 0 hold 1.0
+414.0 trigger 0 1 hold 1.0
+415.5 stick 0 0 -0.8 0 hold 1.5
+417.5 RB
+418.5 LB
+419.5 stick 0 1 0 0 hold 4
+424.0 stick 0 0 0 -0.6 hold 1
+425.5 A
